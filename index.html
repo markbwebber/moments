@@ -528,6 +528,79 @@ a{text-decoration:none;color:inherit}
 .text-bold{font-weight:600}.w-full{width:100%}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .divider{border:none;border-top:1px solid var(--gray-200);margin:16px 0}
 .notice{background:var(--amber-light);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--amber);margin-bottom:16px}
+
+/* ── JOURNEY MAP ──────────────────────────────────────────── */
+.jmap-wrap{display:flex;flex-direction:column;gap:24px}
+.jmap-flow{display:flex;align-items:flex-start;gap:0;overflow-x:auto;padding:8px 4px 16px;position:relative}
+
+/* Stage node */
+.jmap-node{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  flex-shrink:0;width:180px;
+}
+.jmap-icon-wrap{
+  width:56px;height:56px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;border:2px solid var(--gray-200);
+  background:#fff;position:relative;z-index:1;
+  box-shadow:var(--shadow-sm);transition:var(--t);
+}
+.jmap-icon-wrap.blue {background:#EFF6FF;border-color:#BFDBFE;}
+.jmap-icon-wrap.teal {background:#F0FDFA;border-color:#99F6E4;}
+.jmap-icon-wrap.green{background:#F0FDF4;border-color:#BBF7D0;}
+.jmap-node-body{
+  margin-top:12px;padding:14px 12px;width:100%;
+  background:#fff;border-radius:10px;border:1px solid var(--gray-200);
+  box-shadow:var(--shadow-sm);text-align:center;
+}
+.jmap-node-body.blue {border-color:#BFDBFE;background:#F8FBFF;}
+.jmap-node-body.teal {border-color:#99F6E4;background:#F6FFFE;}
+.jmap-node-body.green{border-color:#BBF7D0;background:#F6FFF8;}
+.jmap-node-title{font-size:13px;font-weight:600;color:var(--text);line-height:1.35;margin-bottom:5px}
+.jmap-node-sub{font-size:11px;color:var(--gray-500);line-height:1.45}
+.jmap-moment-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;
+  margin-top:7px;
+}
+.jmap-moment-pill.blue {background:#DBEAFE;color:#1D4ED8;}
+.jmap-moment-pill.teal {background:#CCFBF1;color:#0F766E;}
+.jmap-moment-pill.green{background:#DCFCE7;color:#15803D;}
+.jmap-moment-pill::before{content:'⚡';font-size:9px}
+
+/* Connector arrow between nodes */
+.jmap-connector{
+  display:flex;align-items:flex-start;flex-shrink:0;
+  padding-top:26px; /* align with icon centers */
+  width:40px;
+}
+.jmap-arrow{
+  flex:1;height:2px;background:var(--gray-200);position:relative;margin-top:1px;
+}
+.jmap-arrow::after{
+  content:'';position:absolute;right:-6px;top:-4px;
+  width:0;height:0;
+  border-left:8px solid var(--gray-300);
+  border-top:5px solid transparent;
+  border-bottom:5px solid transparent;
+}
+
+/* Plan overlay card */
+.plan-overlay{display:flex;flex-direction:column;gap:12px}
+.plan-row{display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--gray-100)}
+.plan-row:last-child{border-bottom:none}
+.plan-pill{
+  display:inline-flex;align-items:center;
+  padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:600;white-space:nowrap;flex-shrink:0;
+  background:var(--blue-light);color:var(--blue);
+}
+.plan-val{font-size:13px;color:var(--gray-600);line-height:1.4}
+
+/* Stage legend */
+.jmap-legend{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:4px}
+.jmap-legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray-500)}
+.jmap-legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -626,6 +699,8 @@ function renderSidebar() {
     {id:'campaigns', icon:'⚡', label:'Campaigns', badge: CAMPAIGNS[p].filter(c=>c.status==='active').length, badgeColor:'green'},
     {id:'performance', icon:'📊', label:'Performance'},
     null,
+    {id:'journey_map', icon:'🗺️', label:'Journey Map'},
+    null,
     {id:'settings', icon:'⚙️', label:'Settings'},
   ];
   document.getElementById('sidebar').innerHTML = `
@@ -669,7 +744,8 @@ function renderTopbar() {
   const titles = {
     overview:'Overview', pre_journey:'Pre-Journey — CuratedBy Builder',
     mid_journey:'Mid-Journey Moments', post_journey:'Post-Journey Configuration',
-    campaigns:'Campaign Management', performance:'Performance', settings:'Settings',
+    campaigns:'Campaign Management', performance:'Performance',
+    journey_map:'Journey Map', settings:'Settings',
   };
   document.getElementById('topbar').innerHTML = `
     <div class="topbar-title">${titles[S.screen]||''}</div>
@@ -687,6 +763,7 @@ function renderContent() {
     post_journey: screenPostJourney,
     campaigns: screenCampaigns,
     performance: screenPerformance,
+    journey_map: screenJourneyMap,
     settings: screenSettings,
   };
   document.getElementById('content').innerHTML = (screens[S.screen]||screenOverview)();
@@ -1726,6 +1803,162 @@ function closeModal() {
   S.wizard.open = false;
   document.getElementById('modal-backdrop').style.display = 'none';
   document.getElementById('modal-container').style.display = 'none';
+}
+
+// ── SCREEN: JOURNEY MAP ───────────────────────────────────────
+function screenJourneyMap() {
+  const p = S.persona;
+  const d = DATA[p];
+
+  // Plan data per persona
+  const plan = {
+    publisher: {
+      outcome:  'Monetization',
+      pre:      'Editorial Grid \u2022 Self-Service',
+      mid:      'Sponsored listings enabled',
+      post:     'Offer Suite \u2022 Direct demand off',
+    },
+    retailer: {
+      outcome:  'Conversion',
+      pre:      'Product Grid \u2022 Self-Service',
+      mid:      'Sponsored listings enabled',
+      post:     'Offer Wall \u2022 Direct demand on',
+    },
+  }[p];
+
+  // Helper: build a stage node
+  function node(icon, title, sub, accent) {
+    const cls = accent || '';
+    const pill = accent
+      ? `<div class="jmap-moment-pill ${cls}">Moment</div>`
+      : '';
+    return `
+      <div class="jmap-node">
+        <div class="jmap-icon-wrap ${cls}">${icon}</div>
+        <div class="jmap-node-body ${cls}">
+          <div class="jmap-node-title">${title}</div>
+          <div class="jmap-node-sub">${sub}</div>
+          ${pill}
+        </div>
+      </div>`;
+  }
+
+  // Helper: arrow connector
+  const arrow = `<div class="jmap-connector"><div class="jmap-arrow"></div></div>`;
+
+  return `
+    <div class="page-header-row">
+      <div>
+        <div class="page-title">Journey Map</div>
+        <div class="page-sub">Where Moments intervene across the shopper journey &mdash; ${d.name}</div>
+      </div>
+    </div>
+
+    <div class="jmap-wrap">
+
+      <!-- Legend -->
+      <div class="jmap-legend">
+        <div class="jmap-legend-item">
+          <div class="jmap-legend-dot" style="background:var(--gray-300)"></div>
+          Journey touchpoint
+        </div>
+        <div class="jmap-legend-item">
+          <div class="jmap-legend-dot" style="background:#60A5FA"></div>
+          Pre-Journey Moment
+        </div>
+        <div class="jmap-legend-item">
+          <div class="jmap-legend-dot" style="background:#2DD4BF"></div>
+          Mid-Journey Moment
+        </div>
+        <div class="jmap-legend-item">
+          <div class="jmap-legend-dot" style="background:#4ADE80"></div>
+          Post-Journey Moment
+        </div>
+      </div>
+
+      <!-- Flow diagram -->
+      <div class="card" style="padding:24px 20px">
+        <div class="card-header" style="margin-bottom:20px">
+          <div>
+            <div class="card-title">Shopper Journey Flow</div>
+            <div class="card-sub">A visual of where Button Moments activate across the full journey</div>
+          </div>
+        </div>
+        <div class="jmap-flow">
+
+          ${node('🖱️', 'Publisher click', 'Journey begins from publisher, creator, or partner surface')}
+          ${arrow}
+          ${node('⭐', 'CuratedBy landing', 'Pre-Journey Moment shaping intent and product discovery', 'blue')}
+          ${arrow}
+          ${node('🛍️', 'Retailer PDP / in-flow', 'Mid-Journey Moments influence selection, sponsored listings, and offers', 'teal')}
+          ${arrow}
+          ${node('💳', 'Checkout', 'Conversion event with measurement and guardrails')}
+          ${arrow}
+          ${node('🎁', 'Post-checkout offer', 'Post-Journey Moment driving direct demand and incremental value', 'green')}
+
+        </div>
+      </div>
+
+      <!-- Two-column lower section -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+
+        <!-- Current plan overlay -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Current Plan</div>
+              <div class="card-sub">Active configuration for ${d.name}</div>
+            </div>
+          </div>
+          <div class="plan-overlay">
+            <div class="plan-row">
+              <span class="plan-pill">Outcome</span>
+              <span class="plan-val">${plan.outcome}</span>
+            </div>
+            <div class="plan-row">
+              <span class="plan-pill">Pre</span>
+              <span class="plan-val">${plan.pre}</span>
+            </div>
+            <div class="plan-row">
+              <span class="plan-pill">Mid</span>
+              <span class="plan-val">${plan.mid}</span>
+            </div>
+            <div class="plan-row">
+              <span class="plan-pill">Post</span>
+              <span class="plan-val">${plan.post}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Moment stage summary -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Active Moments by Stage</div>
+              <div class="card-sub">What is running today</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${MOMENTS[p].filter(m=>m.status==='active').map(m => `
+              <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-100)">
+                <span style="font-size:18px">${m.emoji}</span>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:13px;font-weight:600;color:var(--text)">${m.name}</div>
+                  <div style="font-size:11px;color:var(--gray-500);margin-top:2px">${m.type}</div>
+                </div>
+                <div style="text-align:right;flex-shrink:0">
+                  <div style="font-size:13px;font-weight:600;color:var(--text)">${m.rpj} RPJ</div>
+                  <div style="font-size:11px;color:var(--green);margin-top:1px">${m.lift} lift</div>
+                </div>
+                <span class="badge ${m.mode==='Self-Service'?'badge-gray':m.mode==='Button-Managed'?'badge-blue':'badge-navy'}" style="font-size:10px;white-space:nowrap">${m.mode}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
 }
 
 // ── EVENT DELEGATION ──────────────────────────────────────────
