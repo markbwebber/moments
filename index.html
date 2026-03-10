@@ -692,14 +692,14 @@ function renderSidebar() {
   const p = S.persona;
   const nav = [
     {id:'overview', icon:'🏠', label:'Overview'},
+    {id:'journey_map', icon:'🗺️', label:'Journey Map'},
+    null,
     {id:'pre_journey', icon:'⭐', label:'Pre-Journey'},
     {id:'mid_journey', icon:'↕️', label:'Mid-Journey'},
     {id:'post_journey', icon:'🎯', label:'Post-Journey'},
     null,
     {id:'campaigns', icon:'⚡', label:'Campaigns', badge: CAMPAIGNS[p].filter(c=>c.status==='active').length, badgeColor:'green'},
     {id:'performance', icon:'📊', label:'Performance'},
-    null,
-    {id:'journey_map', icon:'🗺️', label:'Journey Map'},
     null,
     {id:'settings', icon:'⚙️', label:'Settings'},
   ];
