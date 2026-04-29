@@ -1,0 +1,2966 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Moments · Studio POC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+/* ---------------------------------------------------------------
+   MOMENTS STUDIO — DESIGN POC
+   Engineering hand-off scaffold. Designer to refine.
+   All visual decisions live in CSS custom properties below.
+   --------------------------------------------------------------- */
+
+:root {
+  /* Surfaces */
+  --bg: #000000;
+  --surface-1: #0a0a0b;
+  --surface-2: #131316;
+  --surface-3: #1a1a1d;
+  --elevated: #18181b;
+
+  /* Borders */
+  --border-soft: rgba(255, 255, 255, 0.06);
+  --border: rgba(255, 255, 255, 0.09);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Text */
+  --text-1: #f4f4f5;
+  --text-2: #a1a1a4;
+  --text-3: #6b6b6f;
+  --text-4: #44444a;
+
+  /* Signature accent — Moments lime.
+     Designer can swap to any single accent; everything keys off this. */
+  --accent: #d2ff3a;
+  --accent-hover: #c1f024;
+  --accent-press: #aad81c;
+  --accent-ink: #0a0a0b;
+  --accent-bg: rgba(210, 255, 58, 0.10);
+  --accent-bg-strong: rgba(210, 255, 58, 0.18);
+
+  /* States */
+  --positive: #4ade80;
+  --positive-bg: rgba(74, 222, 128, 0.10);
+  --warning: #facc15;
+  --warning-bg: rgba(250, 204, 21, 0.10);
+  --danger: #f87171;
+  --danger-bg: rgba(248, 113, 113, 0.10);
+  --info: #60a5fa;
+  --info-bg: rgba(96, 165, 250, 0.10);
+
+  /* Mode chips (Self-Service / Button-Managed / Button-Optimized) */
+  --mode-self: #a1a1a4;
+  --mode-managed: #60a5fa;
+  --mode-optimized: var(--accent);
+
+  /* Geometry */
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  /* Spacing scale (4pt) */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px;
+  --s-6: 24px; --s-8: 32px; --s-10: 40px; --s-12: 48px;
+
+  /* Shadows */
+  --shadow-1: 0 1px 0 0 rgba(255,255,255,0.04) inset;
+  --shadow-pop: 0 12px 40px -12px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Inter Tight', 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text-1);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.005em;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Subtle radial wash to keep pure black from feeling flat */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(1200px 600px at 70% -10%, rgba(210, 255, 58, 0.04), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(96, 165, 250, 0.03), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ---------------------------------------------------------------
+   LAYOUT — App shell: top bar / left nav / main
+   --------------------------------------------------------------- */
+.app {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 56px 1fr;
+  grid-template-areas:
+    "topbar topbar"
+    "nav main";
+  min-height: 100vh;
+}
+
+/* TOP BAR */
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: 0 var(--s-5);
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(10, 10, 11, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+.brand-mark {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  background: var(--accent);
+  display: grid; place-items: center;
+  color: var(--accent-ink);
+  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 13px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 0 24px -4px rgba(210,255,58,0.5);
+}
+/* Advertiser switcher (top-bar) */
+.ad-switcher {
+  position: relative;
+  margin-left: var(--s-4);
+}
+.ad-trigger {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 10px 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-1);
+  color: var(--text-1);
+  font: inherit;
+  cursor: pointer;
+  height: 36px;
+}
+.ad-trigger:hover { border-color: var(--border-strong); background: var(--surface-2); }
+.ad-trigger-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.1; }
+.ad-trigger-label {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+}
+.ad-trigger-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  letter-spacing: -0.005em;
+  margin-top: 1px;
+}
+.ad-logo-mini {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #232328, #3a3a44);
+  display: grid; place-items: center;
+  font-size: 10.5px; font-weight: 700;
+  color: var(--text-1);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  font-family: var(--font-display);
+}
+.ad-logo-lg {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #232328, #3a3a44);
+  display: inline-grid; place-items: center;
+  font-size: 16px; font-weight: 700;
+  color: var(--text-1);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+.page-title-row {
+  display: flex; gap: var(--s-3); align-items: flex-start;
+}
+.page-title-row h1 { margin-top: 0; }
+
+/* Switcher dropdown */
+.ad-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 320px;
+  background: var(--elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  padding: 6px;
+  z-index: 100;
+}
+.ad-menu[hidden] { display: none; }
+.ad-menu-search {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  margin-bottom: 4px;
+}
+.ad-menu-search input {
+  background: transparent;
+  border: 0;
+  outline: 0;
+  flex: 1;
+  color: var(--text-1);
+  font: inherit;
+  font-size: 13px;
+}
+.ad-menu-search input::placeholder { color: var(--text-3); }
+.ad-menu-label {
+  padding: 8px 10px 4px;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--text-3);
+  font-weight: 500;
+}
+.ad-menu-list {
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+  gap: 1px;
+}
+.ad-menu-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 0;
+  color: var(--text-1);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.ad-menu-item:hover { background: var(--surface-2); }
+.ad-menu-item.selected { background: var(--surface-3); }
+.ad-menu-item .ad-mi-text { display: flex; flex-direction: column; line-height: 1.2; flex: 1; }
+.ad-menu-item .ad-mi-name { font-weight: 500; }
+.ad-menu-item .ad-mi-meta { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+.ad-menu-item .check { color: var(--accent); width: 14px; height: 14px; opacity: 0; }
+.ad-menu-item.selected .check { opacity: 1; }
+
+.ad-menu-divider {
+  height: 1px;
+  background: var(--border-soft);
+  margin: 6px 0;
+}
+.ad-menu-action {
+  display: flex; align-items: center; gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-1);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+.ad-menu-action:hover { background: var(--surface-2); }
+.ad-menu-action.primary { color: var(--accent); }
+.ad-menu-action.subtle { color: var(--text-3); }
+.ad-menu-action.subtle:hover { color: var(--text-2); }
+.topbar-spacer { flex: 1; }
+.search {
+  display: flex; align-items: center; gap: var(--s-2);
+  height: 32px; padding: 0 var(--s-3);
+  width: 280px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--text-3);
+  font-size: 13px;
+}
+.search:hover { border-color: var(--border-strong); }
+.search kbd {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  background: rgba(255,255,255,0.02);
+}
+.icon-btn {
+  height: 32px; width: 32px;
+  display: grid; place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--text-2);
+  cursor: pointer;
+}
+.icon-btn:hover { border-color: var(--border-strong); color: var(--text-1); }
+.avatar {
+  height: 30px; width: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2a2a31, #4a4a55);
+  display: grid; place-items: center;
+  font-weight: 600; font-size: 11.5px;
+  color: var(--text-1);
+  border: 1px solid var(--border);
+}
+
+/* LEFT NAV */
+.nav {
+  grid-area: nav;
+  border-right: 1px solid var(--border-soft);
+  padding: var(--s-5) var(--s-3);
+  background: var(--surface-1);
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+.nav-group { margin-bottom: var(--s-5); }
+.nav-label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--text-3);
+  padding: 0 var(--s-3) var(--s-2);
+  font-weight: 500;
+}
+.nav-item {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: 7px var(--s-3);
+  border-radius: 8px;
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 1px;
+}
+.nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+.nav-item.active {
+  background: var(--surface-3);
+  color: var(--text-1);
+  box-shadow: var(--shadow-1);
+}
+.nav-item.active .nav-dot { background: var(--accent); }
+.nav-item.disabled { color: var(--text-4); cursor: not-allowed; }
+.nav-item.disabled:hover { background: transparent; color: var(--text-4); }
+.nav-icon {
+  width: 16px; height: 16px;
+  display: inline-grid; place-items: center;
+  color: var(--text-3);
+}
+.nav-item.active .nav-icon { color: var(--text-1); }
+.nav-item .badge-soon {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.04);
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.nav-item .badge-new {
+  margin-left: auto;
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.nav-foot {
+  margin-top: auto;
+  padding-top: var(--s-4);
+  font-size: 11px;
+  color: var(--text-4);
+  border-top: 1px solid var(--border-soft);
+}
+
+/* MAIN */
+.main {
+  grid-area: main;
+  padding: var(--s-8) var(--s-10);
+  max-width: 1320px;
+  width: 100%;
+}
+@media (max-width: 1100px) {
+  .main { padding: var(--s-6); }
+}
+
+/* ---------------------------------------------------------------
+   PAGE HEADERS
+   --------------------------------------------------------------- */
+.page-head {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: var(--s-6);
+  margin-bottom: var(--s-8);
+}
+.page-head h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-size: 28px;
+  margin: 0 0 6px;
+}
+.page-head .sub { color: var(--text-2); font-size: 13.5px; max-width: 560px; }
+.page-head .actions { display: flex; gap: var(--s-2); }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.10em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  margin-bottom: var(--s-3);
+}
+.eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* ---------------------------------------------------------------
+   BUTTONS
+   --------------------------------------------------------------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 34px; padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--text-1);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+.btn:hover { background: var(--surface-2); border-color: var(--border-strong); }
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+.btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--text-2); }
+.btn-ghost:hover { background: var(--surface-2); color: var(--text-1); }
+.btn-danger { color: var(--danger); }
+.btn-sm { height: 28px; font-size: 12px; padding: 0 10px; }
+.btn .ico { width: 14px; height: 14px; }
+
+/* ---------------------------------------------------------------
+   CARDS
+   --------------------------------------------------------------- */
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--s-5);
+}
+.card-elevated {
+  background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--s-6);
+}
+
+/* KPI tiles */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--s-4);
+  margin-bottom: var(--s-6);
+}
+@media (max-width: 900px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+
+.kpi {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--s-5);
+  position: relative;
+  overflow: hidden;
+}
+.kpi-label {
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+  display: flex; align-items: baseline; gap: 6px;
+}
+.kpi-value .unit { font-size: 13px; color: var(--text-3); font-weight: 500; }
+.kpi-delta {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+.kpi-delta.up { background: var(--positive-bg); color: var(--positive); }
+.kpi-delta.down { background: var(--danger-bg); color: var(--danger); }
+.kpi-delta.flat { background: rgba(255,255,255,0.04); color: var(--text-3); }
+.kpi-spark {
+  position: absolute;
+  right: 10px; bottom: 10px;
+  width: 80px; height: 28px;
+  opacity: 0.5;
+}
+
+/* ---------------------------------------------------------------
+   JOURNEY STAGE CARDS (Overview)
+   --------------------------------------------------------------- */
+.stage-row {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-4);
+  margin-bottom: var(--s-6);
+}
+@media (max-width: 900px) { .stage-row { grid-template-columns: 1fr; } }
+.stage-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--s-5);
+  position: relative;
+}
+.stage-card .top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--s-4);
+}
+.stage-card .stage-name {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.stage-card .stage-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.stage-card .stage-metric {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: var(--s-3) 0 var(--s-1);
+}
+.stage-card .stage-row-bot {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: var(--text-3);
+}
+.stage-card.locked {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,0.012) 0 12px,
+      rgba(255,255,255,0) 12px 24px
+    ),
+    var(--surface-1);
+}
+.stage-card.locked .stage-name { color: var(--text-3); }
+
+/* Status pill */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  background: var(--surface-2);
+}
+.pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); }
+.pill.active { color: var(--positive); background: var(--positive-bg); border-color: rgba(74,222,128,0.18); }
+.pill.active .dot { background: var(--positive); }
+.pill.warning { color: var(--warning); background: var(--warning-bg); border-color: rgba(250,204,21,0.18); }
+.pill.warning .dot { background: var(--warning); }
+.pill.paused { color: var(--text-2); }
+.pill.draft { color: var(--text-3); }
+.pill.ended { color: var(--text-3); background: rgba(255,255,255,0.03); }
+.pill.coming-soon {
+  color: var(--text-3);
+  background: rgba(255,255,255,0.03);
+  border-style: dashed;
+}
+
+/* Mode chip */
+.mode-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.mode-chip .sq { width: 6px; height: 6px; border-radius: 2px; background: var(--mode-self); }
+.mode-chip.self .sq { background: var(--mode-self); }
+.mode-chip.managed { color: var(--mode-managed); background: var(--info-bg); border-color: rgba(96,165,250,0.18); }
+.mode-chip.managed .sq { background: var(--mode-managed); }
+.mode-chip.optimized { color: var(--mode-optimized); background: var(--accent-bg); border-color: rgba(210,255,58,0.18); }
+.mode-chip.optimized .sq { background: var(--mode-optimized); }
+
+/* ---------------------------------------------------------------
+   ACTIVITY FEED
+   --------------------------------------------------------------- */
+.activity {
+  display: flex; flex-direction: column;
+  gap: 0;
+}
+.activity-row {
+  display: grid;
+  grid-template-columns: 16px 100px 1fr auto;
+  gap: var(--s-3);
+  padding: var(--s-3) 0;
+  align-items: center;
+  border-top: 1px solid var(--border-soft);
+}
+.activity-row:first-child { border-top: 0; }
+.activity-row .a-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-4); margin-left: 5px; }
+.activity-row .a-dot.up { background: var(--positive); }
+.activity-row .a-dot.warn { background: var(--warning); }
+.activity-row .a-dot.info { background: var(--info); }
+.activity-row .a-time { color: var(--text-3); font-family: var(--font-mono); font-size: 11.5px; }
+.activity-row .a-msg { color: var(--text-1); font-size: 13px; }
+.activity-row .a-msg .who { color: var(--text-2); }
+.activity-row .a-meta { color: var(--text-3); font-size: 12px; }
+
+/* ---------------------------------------------------------------
+   TWO-COLUMN ROW
+   --------------------------------------------------------------- */
+.two-col { display: grid; grid-template-columns: 2fr 1fr; gap: var(--s-4); margin-bottom: var(--s-6); }
+@media (max-width: 1100px) { .two-col { grid-template-columns: 1fr; } }
+
+.section-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--s-4);
+}
+.section-head h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.section-head .link {
+  font-size: 12px; color: var(--text-2);
+  display: inline-flex; gap: 4px; align-items: center;
+}
+.section-head .link:hover { color: var(--accent); }
+
+/* ---------------------------------------------------------------
+   TABS / SEGMENTED CONTROL
+   --------------------------------------------------------------- */
+.seg {
+  display: inline-flex;
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+.seg-item {
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.seg-item:hover { color: var(--text-1); }
+.seg-item.active {
+  background: var(--surface-3);
+  color: var(--text-1);
+  box-shadow: var(--shadow-1);
+}
+.seg-item .count {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-3);
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.04);
+}
+.seg-item.active .count { color: var(--text-2); }
+
+/* ---------------------------------------------------------------
+   CAMPAIGN TABLE
+   --------------------------------------------------------------- */
+.table-wrap {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface-1);
+}
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.tbl thead th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 12px var(--s-4);
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--surface-2);
+}
+.tbl tbody td {
+  padding: 14px var(--s-4);
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: middle;
+  color: var(--text-1);
+}
+.tbl tbody tr:last-child td { border-bottom: 0; }
+.tbl tbody tr { transition: background .12s ease; cursor: pointer; }
+.tbl tbody tr:hover { background: var(--surface-2); }
+.tbl .num { font-family: var(--font-mono); }
+.tbl .muted { color: var(--text-3); }
+.tbl .name {
+  display: flex; align-items: center; gap: 10px;
+}
+.tbl .name .logo {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #232328, #3a3a44);
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 600;
+  color: var(--text-1);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.tbl .stage-cell {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-2);
+  letter-spacing: 0.02em;
+}
+.tbl .pacing {
+  display: flex; align-items: center; gap: 8px;
+  width: 110px;
+}
+.pacing-bar { flex: 1; height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.pacing-bar > span { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+.pacing-bar.warn > span { background: var(--warning); }
+.pacing-bar.cold > span { background: var(--info); }
+.pacing-pct { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); width: 36px; text-align: right; }
+
+/* Filter row above table */
+.filter-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--s-4);
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.filter-left { display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; }
+.filter-right { display: flex; align-items: center; gap: var(--s-2); }
+.input {
+  height: 32px; padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-1);
+  color: var(--text-1);
+  font-size: 12.5px;
+  font-family: inherit;
+  min-width: 200px;
+}
+.input::placeholder { color: var(--text-3); }
+.input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+
+/* ---------------------------------------------------------------
+   COMING SOON state
+   --------------------------------------------------------------- */
+.coming-soon {
+  text-align: center;
+  padding: var(--s-12) var(--s-6);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,0.012) 0 14px,
+      rgba(255,255,255,0) 14px 28px
+    ),
+    var(--surface-1);
+}
+.coming-soon h3 {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: 700;
+  margin: 0 0 var(--s-2);
+  letter-spacing: -0.02em;
+}
+.coming-soon p { color: var(--text-2); max-width: 460px; margin: 0 auto var(--s-5); }
+
+/* ---------------------------------------------------------------
+   WIZARD
+   --------------------------------------------------------------- */
+.wizard {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: var(--s-6);
+}
+@media (max-width: 1100px) { .wizard { grid-template-columns: 1fr; } }
+
+.steps {
+  display: flex;
+  gap: var(--s-2);
+  margin-bottom: var(--s-6);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-1);
+  border-radius: var(--radius);
+  padding: 6px;
+  overflow-x: auto;
+}
+.step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+.step .num {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: rgba(255,255,255,0.04);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+.step.done { color: var(--text-2); }
+.step.done .num { background: var(--accent-bg); color: var(--accent); }
+.step.current { color: var(--text-1); background: var(--surface-3); }
+.step.current .num { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+
+.form-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--s-6);
+}
+.form-card h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  margin: 0 0 var(--s-2);
+  letter-spacing: -0.015em;
+}
+.form-card .desc { color: var(--text-2); font-size: 13px; margin-bottom: var(--s-6); max-width: 520px; }
+
+.field {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--s-5);
+  padding: var(--s-4) 0;
+  border-top: 1px solid var(--border-soft);
+}
+.field:first-of-type { border-top: 0; }
+.field .label { font-size: 13px; font-weight: 500; color: var(--text-1); }
+.field .label .hint { display: block; color: var(--text-3); font-weight: 400; font-size: 12px; margin-top: 4px; }
+.field .control { display: flex; flex-direction: column; gap: var(--s-2); }
+.field .control input,
+.field .control select,
+.field .control textarea {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-1);
+  font: inherit;
+  font-size: 13px;
+}
+.field .control textarea { padding: 10px 12px; height: auto; resize: vertical; }
+.field .control input:focus,
+.field .control select:focus,
+.field .control textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+.field .helper { font-size: 12px; color: var(--text-3); }
+
+/* Mode selector — primary product component */
+.mode-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-3);
+}
+@media (max-width: 700px) { .mode-selector { grid-template-columns: 1fr; } }
+.mode-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s-4);
+  cursor: pointer;
+  position: relative;
+  transition: border-color .12s ease, background .12s ease;
+}
+.mode-card:hover { border-color: var(--border-strong); }
+.mode-card.selected {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, var(--accent-bg), var(--surface-2));
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+.mode-card .mode-title {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.mode-card .mode-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+.mode-card .mode-tag {
+  margin-top: var(--s-3);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.demand-selector { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--s-3); }
+@media (max-width: 700px) { .demand-selector { grid-template-columns: 1fr; } }
+.demand-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s-4);
+  cursor: pointer;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.demand-card:hover { border-color: var(--border-strong); }
+.demand-card.selected { border-color: var(--accent); background: linear-gradient(180deg, var(--accent-bg), var(--surface-2)); }
+.demand-card .name { font-weight: 600; font-size: 13px; }
+.demand-card .desc { font-size: 12px; color: var(--text-2); line-height: 1.45; }
+
+/* Wizard side summary */
+.wizard-side {
+  position: sticky; top: 80px;
+  align-self: start;
+}
+.summary-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--s-5);
+}
+.summary-card h4 {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 600;
+  margin: 0 0 var(--s-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+}
+.summary-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-soft);
+  font-size: 13px;
+  gap: var(--s-3);
+}
+.summary-row:first-of-type { border-top: 0; }
+.summary-row .lbl { color: var(--text-3); font-size: 12px; }
+.summary-row .val { color: var(--text-1); text-align: right; }
+.summary-row .val.empty { color: var(--text-4); font-style: italic; }
+
+/* Wizard footer / actions */
+.wizard-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: var(--s-5);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--border-soft);
+}
+
+/* ---------------------------------------------------------------
+   CAMPAIGN DETAIL
+   --------------------------------------------------------------- */
+.detail-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: var(--s-6);
+  margin-bottom: var(--s-6);
+}
+.detail-head .breadcrumb {
+  font-size: 12px; color: var(--text-3); margin-bottom: 8px;
+  display: flex; gap: 6px; align-items: center;
+}
+.detail-head .breadcrumb a { color: var(--text-2); }
+.detail-head .breadcrumb a:hover { color: var(--accent); }
+.detail-head .name {
+  font-family: var(--font-display);
+  font-size: 26px; font-weight: 700;
+  letter-spacing: -0.025em;
+  display: flex; align-items: center; gap: var(--s-3);
+  margin-bottom: 8px;
+}
+.detail-head .meta {
+  display: flex; gap: var(--s-2); align-items: center;
+  flex-wrap: wrap;
+}
+.detail-head .meta .ad {
+  font-size: 12.5px; color: var(--text-2);
+  display: flex; align-items: center; gap: 6px;
+}
+.detail-head .meta .ad .logo-mini {
+  width: 18px; height: 18px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #232328, #3a3a44);
+  border: 1px solid var(--border);
+  display: grid; place-items: center;
+  font-size: 9.5px; font-weight: 600;
+}
+
+/* Chart area */
+.chart-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--s-5);
+}
+.chart-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: var(--s-4);
+}
+.chart-head .title { font-family: var(--font-display); font-weight: 600; font-size: 14px; }
+.chart-head .leg { display: flex; gap: var(--s-3); align-items: center; flex-wrap: wrap; }
+.chart-head .leg .leg-item {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11.5px; color: var(--text-2);
+}
+.chart-head .leg .leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+.chart-svg { width: 100%; height: 220px; display: block; }
+
+/* Pacing widget */
+.pace-widget { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-4); }
+.pace-stat .lbl { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; }
+.pace-stat .v { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-top: 4px; }
+.pace-stat .sub { font-size: 11.5px; color: var(--text-3); margin-top: 4px; font-family: var(--font-mono); }
+.pace-bar-big {
+  height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden;
+  margin-top: var(--s-2);
+}
+.pace-bar-big > span { display: block; height: 100%; border-radius: 4px; background: var(--accent); }
+
+/* Demand mix horizontal bar */
+.mix-row { padding: 10px 0; border-top: 1px solid var(--border-soft); }
+.mix-row:first-child { border-top: 0; }
+.mix-row .top {
+  display: flex; justify-content: space-between; font-size: 12.5px;
+}
+.mix-row .top .name { color: var(--text-1); }
+.mix-row .top .val { color: var(--text-3); font-family: var(--font-mono); }
+.mix-row .bar { height: 4px; background: rgba(255,255,255,0.06); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.mix-row .bar > span { display: block; height: 100%; }
+
+/* ---------------------------------------------------------------
+   CREATIVE STEP — format banner, dropzone, character counters
+   --------------------------------------------------------------- */
+.format-banner {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: var(--s-4);
+}
+.format-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.format-title { font-weight: 600; font-size: 13.5px; }
+.format-sub { font-size: 12px; color: var(--text-3); margin-top: 2px; max-width: 480px; }
+
+.dropzone {
+  display: flex; align-items: center; gap: var(--s-4);
+  padding: var(--s-4);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+.dz-thumb {
+  width: 60px; height: 60px;
+  border-radius: 10px;
+  background: var(--surface-3);
+  display: grid; place-items: center;
+  flex-shrink: 0;
+}
+.dz-body { flex: 1; }
+.dz-title { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+.dz-link { color: var(--accent); cursor: pointer; }
+.dz-link:hover { text-decoration: underline; }
+.dz-rules {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.spec-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  color: var(--text-2);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border-soft);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+.spec-pill .ok {
+  width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
+}
+
+.counter-row {
+  display: flex; align-items: center; gap: var(--s-3);
+  margin-top: 6px;
+}
+.counter {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-3);
+  display: flex; gap: 8px; align-items: center;
+}
+.counter .char-count { color: var(--text-1); }
+.counter .char-max { color: var(--text-3); }
+.counter .char-target {
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+.meter {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.meter-fill {
+  display: block; height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width .15s ease;
+}
+.meter-fill.warn { background: var(--warning); }
+.meter-fill.danger { background: var(--danger); }
+
+.input-label {
+  font-size: 12px; color: var(--text-3);
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.input-label .req {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--accent); letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.input-label .optional {
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-3); letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------
+   PHONE PREVIEW (live preview of offer creative)
+   --------------------------------------------------------------- */
+.preview-card {
+  background: linear-gradient(180deg, var(--surface-2), var(--surface-1));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--s-5);
+}
+.preview-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--s-4);
+}
+.preview-head h4 {
+  font-family: var(--font-display);
+  font-size: 13px; font-weight: 600;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-3);
+}
+.phone {
+  background: #050506;
+  border: 1px solid var(--border-strong);
+  border-radius: 28px;
+  padding: 10px;
+  margin: 0 auto;
+  width: 240px;
+  box-shadow: 0 12px 40px -16px rgba(0,0,0,0.8), inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+.phone-screen {
+  background: #f5f5f5;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 420px;
+  display: flex;
+  flex-direction: column;
+  color: #111;
+}
+.phone-status {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 14px 6px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 11px;
+  color: #111;
+}
+.confirm-bar {
+  background: #fff;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e7e7ea;
+  font-size: 11px;
+  color: #6b6b70;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.confirm-thanks {
+  padding: 14px 14px 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  color: #111;
+  letter-spacing: -0.01em;
+}
+.offer-card {
+  margin: 8px 12px 12px;
+  padding: 14px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e7e7ea;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.offer-logo { width: 48px; height: 48px; }
+.offer-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  color: #111;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+.offer-short {
+  font-size: 11.5px;
+  color: #5b5b62;
+  line-height: 1.4;
+}
+.offer-cta {
+  margin-top: 4px;
+  background: #111;
+  color: #fff;
+  border: 0;
+  height: 34px;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+}
+.offer-foot {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: #9a9aa0;
+  letter-spacing: 0.04em;
+  text-align: center;
+  margin-top: 4px;
+}
+.preview-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: var(--s-3);
+}
+
+/* ---------------------------------------------------------------
+   PICK-ADVERTISER EMPTY STATE
+   --------------------------------------------------------------- */
+.empty-pick {
+  background: var(--surface-1);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--s-8);
+}
+.empty-pick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s-4);
+  margin-bottom: var(--s-8);
+}
+@media (max-width: 900px) { .empty-pick-grid { grid-template-columns: 1fr; } }
+.empty-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s-5);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .12s ease, transform .12s ease;
+  font: inherit;
+  color: inherit;
+}
+.empty-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+.empty-card.primary {
+  border-color: var(--accent-bg-strong);
+  background: linear-gradient(180deg, var(--accent-bg), var(--surface-2));
+}
+.empty-card.primary:hover { border-color: var(--accent); }
+.empty-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--surface-3);
+  color: var(--text-2);
+  display: grid; place-items: center;
+  margin-bottom: var(--s-3);
+}
+.empty-title { font-family: var(--font-display); font-weight: 600; font-size: 14.5px; margin-bottom: 4px; letter-spacing: -0.01em; }
+.empty-desc { font-size: 12.5px; color: var(--text-2); line-height: 1.45; }
+
+.empty-recent-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.10em;
+  color: var(--text-3);
+  font-weight: 500;
+  margin-bottom: var(--s-3);
+}
+.empty-recent-list {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.ad-quickpick {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px 6px 6px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-1);
+  font: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.ad-quickpick:hover { border-color: var(--accent); background: var(--accent-bg); color: var(--accent); }
+
+/* ---------------------------------------------------------------
+   SETTINGS LAYOUT (left rail + body)
+   --------------------------------------------------------------- */
+.settings-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: var(--s-6);
+  align-items: flex-start;
+}
+@media (max-width: 1000px) { .settings-layout { grid-template-columns: 1fr; } }
+.settings-nav {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 6px;
+  background: var(--surface-1);
+}
+.settings-nav-item {
+  padding: 8px 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.settings-nav-item:hover { background: var(--surface-2); color: var(--text-1); }
+.settings-nav-item.active { background: var(--surface-3); color: var(--text-1); font-weight: 500; }
+.settings-body { display: flex; flex-direction: column; gap: var(--s-6); }
+
+/* ---------------------------------------------------------------
+   VALIDATION CHECK LIST (Campaign Detail)
+   --------------------------------------------------------------- */
+.check-list { display: flex; flex-direction: column; gap: 2px; }
+.check-row {
+  display: flex; gap: var(--s-3); align-items: flex-start;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-soft);
+}
+.check-row:first-child { border-top: 0; }
+.check {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.check.ok { background: var(--positive-bg); color: var(--positive); }
+.check.warn { background: var(--warning-bg); color: var(--warning); }
+.check.err { background: var(--danger-bg); color: var(--danger); }
+.check-title { font-size: 13px; font-weight: 500; color: var(--text-1); }
+.check-sub { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+
+/* ---------------------------------------------------------------
+   DEMO DATA banner — keeps mockup honest
+   --------------------------------------------------------------- */
+.demo-banner {
+  position: fixed;
+  bottom: 14px; right: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  z-index: 100;
+}
+.demo-banner .dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--warning); margin-right: 6px; vertical-align: middle;
+}
+
+/* Hide all views by default; the active one is shown via [data-active] */
+.view { display: none; }
+.view.active { display: block; animation: fade .18s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+
+/* Empty cells util */
+.right { text-align: right; }
+.center { text-align: center; }
+.flex { display: flex; }
+.gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; }
+.mt-3 { margin-top: 12px; } .mt-4 { margin-top: 16px; } .mt-6 { margin-top: 24px; }
+.muted { color: var(--text-3); }
+.tiny { font-size: 11.5px; }
+
+/* Inline icons (stroke-based) */
+.svgi { width: 16px; height: 16px; stroke-width: 1.6; }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===================== TOP BAR ===================== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <span>Moments</span>
+    </div>
+    <div class="ad-switcher" id="ad-switcher">
+      <button class="ad-trigger" id="ad-trigger" type="button">
+        <span class="ad-logo-mini" id="ad-trigger-logo">DY</span>
+        <span class="ad-trigger-text">
+          <span class="ad-trigger-label">Acting as</span>
+          <span class="ad-trigger-name" id="ad-trigger-name">Dyson</span>
+        </span>
+        <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+
+      <div class="ad-menu" id="ad-menu" hidden>
+        <div class="ad-menu-search">
+          <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input placeholder="Search advertisers" />
+        </div>
+        <div class="ad-menu-label">Advertisers</div>
+        <div class="ad-menu-list">
+          <button class="ad-menu-item selected" data-ad-name="Dyson" data-ad-initials="DY">
+            <span class="ad-logo-mini">DY</span>
+            <span class="ad-mi-text"><span class="ad-mi-name">Dyson</span><span class="ad-mi-meta">2 active campaigns</span></span>
+            <svg class="svgi check" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg>
+          </button>
+          <button class="ad-menu-item" data-ad-name="HelloFresh" data-ad-initials="HF">
+            <span class="ad-logo-mini">HF</span>
+            <span class="ad-mi-text"><span class="ad-mi-name">HelloFresh</span><span class="ad-mi-meta">1 active</span></span>
+          </button>
+          <button class="ad-menu-item" data-ad-name="Sephora" data-ad-initials="SE">
+            <span class="ad-logo-mini">SE</span>
+            <span class="ad-mi-text"><span class="ad-mi-name">Sephora</span><span class="ad-mi-meta">1 active</span></span>
+          </button>
+          <button class="ad-menu-item" data-ad-name="Brooklinen" data-ad-initials="BL">
+            <span class="ad-logo-mini">BL</span>
+            <span class="ad-mi-text"><span class="ad-mi-name">Brooklinen</span><span class="ad-mi-meta">1 draft</span></span>
+          </button>
+          <button class="ad-menu-item" data-ad-name="Allbirds" data-ad-initials="AB">
+            <span class="ad-logo-mini">AB</span>
+            <span class="ad-mi-text"><span class="ad-mi-name">Allbirds</span><span class="ad-mi-meta">1 paused</span></span>
+          </button>
+          <button class="ad-menu-item" data-ad-name="Chewy" data-ad-initials="CH">
+            <span class="ad-logo-mini">CH</span>
+            <span class="ad-mi-text"><span class="ad-mi-name">Chewy</span><span class="ad-mi-meta">1 active</span></span>
+          </button>
+        </div>
+        <div class="ad-menu-divider"></div>
+        <button class="ad-menu-action primary" id="ad-new">
+          <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+          New advertiser
+        </button>
+        <button class="ad-menu-action" onclick="go('settings'); closeAdMenu();">
+          <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+          Manage advertisers
+        </button>
+        <div class="ad-menu-divider"></div>
+        <button class="ad-menu-action subtle" id="ad-clear">
+          <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+          Clear selection (demo empty state)
+        </button>
+      </div>
+    </div>
+
+    <div class="topbar-spacer"></div>
+
+    <div class="search">
+      <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <span>Search Moments, campaigns, advertisers…</span>
+      <kbd>⌘K</kbd>
+    </div>
+    <button class="icon-btn" aria-label="Notifications">
+      <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 7 3 9H3c0-2 3-2 3-9z"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+    </button>
+    <div class="avatar" title="Mark Webber">MW</div>
+  </header>
+
+  <!-- ===================== LEFT NAV ===================== -->
+  <aside class="nav">
+
+    <div class="nav-group">
+      <div class="nav-item active" data-link="overview">
+        <span class="nav-icon"><svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12L12 3l9 9"/><path d="M5 10v10h14V10"/></svg></span>
+        Overview
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Journey</div>
+      <div class="nav-item" data-link="pre">
+        <span class="nav-icon"><svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></span>
+        Pre-Journey
+      </div>
+      <div class="nav-item disabled" data-link="mid">
+        <span class="nav-icon"><svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12h18"/><path d="M9 6l-6 6 6 6"/><path d="M15 6l6 6-6 6"/></svg></span>
+        Mid-Journey
+        <span class="badge-soon">Phase 3</span>
+      </div>
+      <div class="nav-item" data-link="post">
+        <span class="nav-icon"><svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg></span>
+        Post-Journey
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Demand</div>
+      <div class="nav-item" data-link="campaigns">
+        <span class="nav-icon"><svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 3 5-7"/></svg></span>
+        Campaigns
+        <span class="badge-new">New</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Insights</div>
+      <div class="nav-item" data-link="performance">
+        <span class="nav-icon"><svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M7 17V9"/><path d="M12 17v-5"/><path d="M17 17V6"/></svg></span>
+        Performance
+      </div>
+      <div class="nav-item disabled" data-link="experiments">
+        <span class="nav-icon"><svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 3v6l-5 9a3 3 0 0 0 3 4h10a3 3 0 0 0 3-4l-5-9V3"/><path d="M8 3h8"/></svg></span>
+        Experiments
+        <span class="badge-soon">Phase 4</span>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Admin</div>
+      <div class="nav-item" data-link="settings">
+        <span class="nav-icon"><svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span>
+        Settings
+      </div>
+    </div>
+
+    <div class="nav-foot">
+      Phase 1 · Foundation<br />
+      Build 0.1.0 · POC
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+
+    <!-- ===================== VIEW: OVERVIEW ===================== -->
+    <section class="view active" data-view="overview">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Studio · Overview</div>
+          <h1>Welcome back, Mark.</h1>
+          <p class="sub">Here is what is moving across your Moments today. Configure, monitor, and measure interventions across Pre, Mid, and Post journey stages.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-ghost">
+            <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+            Quick add
+          </button>
+          <button class="btn btn-primary" onclick="go('campaigns')">
+            <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Go to Campaigns
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI ROW -->
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label">Active Moments</div>
+          <div class="kpi-value">12</div>
+          <div class="kpi-delta up">+3 this week</div>
+          <svg class="kpi-spark" viewBox="0 0 80 28" fill="none" stroke="var(--accent)" stroke-width="1.5">
+            <polyline points="0,22 10,18 20,20 30,14 40,15 50,10 60,12 70,6 80,8"/>
+          </svg>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Active Campaigns</div>
+          <div class="kpi-value">7</div>
+          <div class="kpi-delta up">+2 vs last 28d</div>
+          <svg class="kpi-spark" viewBox="0 0 80 28" fill="none" stroke="var(--info)" stroke-width="1.5">
+            <polyline points="0,18 10,20 20,15 30,17 40,12 50,14 60,9 70,11 80,6"/>
+          </svg>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">RPJ · 28d</div>
+          <div class="kpi-value">$0.42<span class="unit">/journey</span></div>
+          <div class="kpi-delta up">+8.4%</div>
+          <svg class="kpi-spark" viewBox="0 0 80 28" fill="none" stroke="var(--positive)" stroke-width="1.5">
+            <polyline points="0,20 10,17 20,18 30,12 40,14 50,8 60,10 70,5 80,4"/>
+          </svg>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Conversion lift · 28d</div>
+          <div class="kpi-value">+1.6<span class="unit">pts</span></div>
+          <div class="kpi-delta flat">no change</div>
+          <svg class="kpi-spark" viewBox="0 0 80 28" fill="none" stroke="var(--text-3)" stroke-width="1.5">
+            <polyline points="0,16 10,15 20,16 30,15 40,14 50,16 60,15 70,15 80,15"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- STAGE CARDS -->
+      <div class="section-head">
+        <h2>Journey at a glance</h2>
+        <a class="link">All stages →</a>
+      </div>
+      <div class="stage-row">
+        <div class="stage-card">
+          <div class="top">
+            <div>
+              <div class="stage-name">Pre-Journey</div>
+              <div class="stage-sub">CuratedBy &amp; sponsored entry</div>
+            </div>
+            <span class="pill active"><span class="dot"></span>Healthy</span>
+          </div>
+          <div class="stage-metric">4 Moments</div>
+          <div class="stage-row-bot">
+            <span class="muted">RPJ contribution</span>
+            <span class="num" style="font-family:var(--font-mono); color:var(--text-1)">$0.11</span>
+          </div>
+        </div>
+        <div class="stage-card locked">
+          <div class="top">
+            <div>
+              <div class="stage-name">Mid-Journey</div>
+              <div class="stage-sub">In-flow Moments &amp; CRO</div>
+            </div>
+            <span class="pill coming-soon"><span class="dot"></span>Phase 3</span>
+          </div>
+          <div class="stage-metric muted">Coming soon</div>
+          <div class="stage-row-bot">
+            <span class="muted">Cross-sell, sponsored listings, app installs</span>
+          </div>
+        </div>
+        <div class="stage-card">
+          <div class="top">
+            <div>
+              <div class="stage-name">Post-Journey</div>
+              <div class="stage-sub">Post-checkout offers &amp; BAS</div>
+            </div>
+            <span class="pill warning"><span class="dot"></span>Pacing low</span>
+          </div>
+          <div class="stage-metric">8 Moments</div>
+          <div class="stage-row-bot">
+            <span class="muted">RPJ contribution</span>
+            <span class="num" style="font-family:var(--font-mono); color:var(--text-1)">$0.31</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TWO-COL: ACTIVITY + OPERATING MODE PEEK -->
+      <div class="two-col">
+        <div class="card">
+          <div class="section-head">
+            <h2>Recent activity</h2>
+            <a class="link">View log →</a>
+          </div>
+          <div class="activity">
+            <div class="activity-row">
+              <span class="a-dot up"></span>
+              <span class="a-time">2m ago</span>
+              <span class="a-msg"><span class="who">You</span> launched campaign <strong>Dyson · Spring Refresh</strong></span>
+              <span class="a-meta">Post-Journey</span>
+            </div>
+            <div class="activity-row">
+              <span class="a-dot info"></span>
+              <span class="a-time">38m ago</span>
+              <span class="a-msg"><span class="who">System</span> created advertiser record <strong>Brooklinen</strong></span>
+              <span class="a-meta">Direct demand</span>
+            </div>
+            <div class="activity-row">
+              <span class="a-dot warn"></span>
+              <span class="a-time">2h ago</span>
+              <span class="a-msg"><span class="who">Pacing</span> flagged <strong>HelloFresh · Q2</strong> at 38% of plan</span>
+              <span class="a-meta">Warning</span>
+            </div>
+            <div class="activity-row">
+              <span class="a-dot"></span>
+              <span class="a-time">Yesterday</span>
+              <span class="a-msg"><span class="who">Tara K.</span> paused campaign <strong>Allbirds · Repeat Buyers</strong></span>
+              <span class="a-meta">Post-Journey</span>
+            </div>
+            <div class="activity-row">
+              <span class="a-dot"></span>
+              <span class="a-time">Yesterday</span>
+              <span class="a-msg"><span class="who">You</span> updated guardrails on <strong>CuratedBy · Travel</strong></span>
+              <span class="a-meta">Pre-Journey</span>
+            </div>
+            <div class="activity-row">
+              <span class="a-dot info"></span>
+              <span class="a-time">2d ago</span>
+              <span class="a-msg"><span class="who">System</span> flagged 1 placement conflict on <strong>Sephora · Loyalty</strong></span>
+              <span class="a-meta">Resolved</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>Operating mode</h2>
+            <span class="tiny muted">per-Moment in Phase 3</span>
+          </div>
+          <p class="tiny muted" style="margin-top:0">Three modes are exposed across every Moment. Self-Service is live in Phase 1; Button-Managed and Button-Optimized arrive in later phases.</p>
+          <div class="mode-selector mt-4">
+            <div class="mode-card selected">
+              <div class="mode-title"><span class="sq" style="background:var(--mode-self)"></span> Self-Service</div>
+              <div class="mode-desc">You build, configure, and control the Moment directly.</div>
+              <div class="mode-tag">Available now</div>
+            </div>
+            <div class="mode-card">
+              <div class="mode-title"><span class="sq" style="background:var(--mode-managed)"></span> Button-Managed</div>
+              <div class="mode-desc">Set goals and guardrails. Button configures and maintains.</div>
+              <div class="mode-tag">Phase 3</div>
+            </div>
+            <div class="mode-card">
+              <div class="mode-title"><span class="sq" style="background:var(--mode-optimized)"></span> Button-Optimized</div>
+              <div class="mode-desc">Set guardrails. Button optimizes content, placement, sequence.</div>
+              <div class="mode-tag">Phase 4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: CAMPAIGNS LIST ===================== -->
+    <section class="view" data-view="campaigns">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Demand · Campaigns</div>
+          <div class="page-title-row">
+            <span class="ad-logo-lg" id="page-ad-logo">DY</span>
+            <div>
+              <h1 id="page-ad-h1">Dyson · Campaigns</h1>
+              <p class="sub">All direct demand campaigns for this advertiser. Switch advertisers from the top bar.</p>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-ghost">
+            <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+            Export
+          </button>
+          <button class="btn btn-primary" onclick="go('wizard')">
+            <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+            New campaign
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI strip (campaign-scoped) -->
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label">Live campaigns</div>
+          <div class="kpi-value">7</div>
+          <div class="kpi-delta up">+2 vs last 28d</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Spend · 28d</div>
+          <div class="kpi-value">$184.2k</div>
+          <div class="kpi-delta up">+12.1%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Pacing on track</div>
+          <div class="kpi-value">5<span class="unit">/ 7</span></div>
+          <div class="kpi-delta flat">stable</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">RPJ contribution</div>
+          <div class="kpi-value">$0.22<span class="unit">/journey</span></div>
+          <div class="kpi-delta up">+9%</div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-row">
+        <div class="filter-left">
+          <div class="seg" id="status-tabs">
+            <span class="seg-item active">All <span class="count">12</span></span>
+            <span class="seg-item">Active <span class="count">7</span></span>
+            <span class="seg-item">Paused <span class="count">2</span></span>
+            <span class="seg-item">Draft <span class="count">2</span></span>
+            <span class="seg-item">Ended <span class="count">1</span></span>
+          </div>
+          <input class="input" placeholder="Filter by name, advertiser, retailer…" />
+        </div>
+        <div class="filter-right">
+          <button class="btn btn-sm">
+            <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+            Filters
+          </button>
+          <button class="btn btn-sm">
+            <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+            Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Table (scoped to selected advertiser) -->
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th style="width:36%">Campaign</th>
+              <th>Stage</th>
+              <th>Mode</th>
+              <th>Status</th>
+              <th>Pacing</th>
+              <th class="right">Spend / Cap</th>
+              <th class="right">RPJ contrib.</th>
+              <th class="right">Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr onclick="go('detail')">
+              <td>
+                <div class="name">
+                  <div class="logo">DY</div>
+                  <div>
+                    <div>Spring Refresh</div>
+                    <div class="muted tiny">Standard offer · Confirmation</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="stage-cell">POST-JOURNEY</span></td>
+              <td><span class="mode-chip self"><span class="sq"></span>Self-Service</span></td>
+              <td><span class="pill active"><span class="dot"></span>Active</span></td>
+              <td>
+                <div class="pacing">
+                  <div class="pacing-bar"><span style="width:64%"></span></div>
+                  <span class="pacing-pct">64%</span>
+                </div>
+              </td>
+              <td class="right num">$28.4k <span class="muted">/ $50k</span></td>
+              <td class="right num">$0.07</td>
+              <td class="right muted tiny">2m ago</td>
+            </tr>
+            <tr onclick="go('detail')">
+              <td>
+                <div class="name">
+                  <div class="logo">DY</div>
+                  <div>
+                    <div>Vacuum Trade-Up</div>
+                    <div class="muted tiny">Standard offer · Confirmation</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="stage-cell">POST-JOURNEY</span></td>
+              <td><span class="mode-chip self"><span class="sq"></span>Self-Service</span></td>
+              <td><span class="pill active"><span class="dot"></span>Active</span></td>
+              <td>
+                <div class="pacing">
+                  <div class="pacing-bar"><span style="width:48%"></span></div>
+                  <span class="pacing-pct">48%</span>
+                </div>
+              </td>
+              <td class="right num">$18.2k <span class="muted">/ $38k</span></td>
+              <td class="right num">$0.04</td>
+              <td class="right muted tiny">3h ago</td>
+            </tr>
+            <tr onclick="go('detail')">
+              <td>
+                <div class="name">
+                  <div class="logo">DY</div>
+                  <div>
+                    <div>Hair Care Q2</div>
+                    <div class="muted tiny">Standard offer · Confirmation</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="stage-cell">POST-JOURNEY</span></td>
+              <td><span class="mode-chip self"><span class="sq"></span>Self-Service</span></td>
+              <td><span class="pill draft"><span class="dot"></span>Draft</span></td>
+              <td>
+                <div class="pacing">
+                  <div class="pacing-bar cold"><span style="width:0%"></span></div>
+                  <span class="pacing-pct">no data</span>
+                </div>
+              </td>
+              <td class="right muted">no data <span class="muted">/ $20k</span></td>
+              <td class="right muted">no data</td>
+              <td class="right muted tiny">Yesterday</td>
+            </tr>
+            <tr onclick="go('detail')">
+              <td>
+                <div class="name">
+                  <div class="logo">DY</div>
+                  <div>
+                    <div>Air Purifier · New Customer</div>
+                    <div class="muted tiny">Standard offer · Confirmation</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="stage-cell">POST-JOURNEY</span></td>
+              <td><span class="mode-chip self"><span class="sq"></span>Self-Service</span></td>
+              <td><span class="pill paused"><span class="dot"></span>Paused</span></td>
+              <td>
+                <div class="pacing">
+                  <div class="pacing-bar"><span style="width:62%; opacity:0.4"></span></div>
+                  <span class="pacing-pct">62%</span>
+                </div>
+              </td>
+              <td class="right num">$14.8k <span class="muted">/ $24k</span></td>
+              <td class="right num">$0.03</td>
+              <td class="right muted tiny">2d ago</td>
+            </tr>
+            <tr onclick="go('detail')">
+              <td>
+                <div class="name">
+                  <div class="logo">DY</div>
+                  <div>
+                    <div>Holiday 2025 Recap</div>
+                    <div class="muted tiny">Standard offer · Confirmation</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="stage-cell">POST-JOURNEY</span></td>
+              <td><span class="mode-chip self"><span class="sq"></span>Self-Service</span></td>
+              <td><span class="pill ended"><span class="dot"></span>Ended</span></td>
+              <td>
+                <div class="pacing">
+                  <div class="pacing-bar"><span style="width:100%; opacity:0.5"></span></div>
+                  <span class="pacing-pct">100%</span>
+                </div>
+              </td>
+              <td class="right num">$60.0k <span class="muted">/ $60k</span></td>
+              <td class="right num">$0.06</td>
+              <td class="right muted tiny">Jan 12</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: WIZARD (NEW CAMPAIGN) ===================== -->
+    <section class="view" data-view="wizard">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Demand · New campaign</div>
+          <div class="page-title-row">
+            <span class="ad-logo-lg" id="wiz-ad-logo">DY</span>
+            <div>
+              <h1 id="wiz-ad-h1">New campaign for Dyson</h1>
+              <p class="sub">Four steps. Advertiser is set by your switcher selection. You can save and resume at any point.</p>
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-ghost" onclick="go('campaigns')">Cancel</button>
+          <button class="btn">Save draft</button>
+        </div>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="steps">
+        <div class="step done"><span class="num">✓</span> Basics</div>
+        <div class="step done"><span class="num">✓</span> Placement</div>
+        <div class="step current"><span class="num">3</span> Creative</div>
+        <div class="step"><span class="num">4</span> Budget &amp; Pacing</div>
+        <div class="step"><span class="num">5</span> Review</div>
+      </div>
+
+      <div class="wizard">
+        <!-- Form -->
+        <div>
+          <div class="form-card">
+            <h3>Creative</h3>
+            <p class="desc">Define the offer creative that will appear on the confirmation page. The POC supports the standard post-checkout offer format. These specs match the existing MomentScience creative submission guidelines so partners already producing creative for that format can submit the same assets.</p>
+
+            <div class="format-banner">
+              <div class="format-icon">
+                <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h6"/></svg>
+              </div>
+              <div>
+                <div class="format-title">Standard post-checkout offer</div>
+                <div class="format-sub">First and only offer format supported in the POC. Mobile-first by design. Other formats (interstitial, hero card, multi-step) ship in later phases.</div>
+              </div>
+              <span class="pill" style="margin-left:auto"><span class="dot" style="background:var(--accent)"></span>Active</span>
+            </div>
+
+            <div class="field">
+              <div class="label">Logo
+                <span class="hint">PNG (preferred), 1024 × 1024px, transparent background. Max 1 MB.</span>
+              </div>
+              <div class="control">
+                <div class="dropzone">
+                  <div class="dz-thumb">
+                    <svg viewBox="0 0 60 60" width="60" height="60" fill="none">
+                      <rect x="1" y="1" width="58" height="58" rx="10" stroke="rgba(255,255,255,0.10)"/>
+                      <path d="M20 38l8-10 6 7 4-5 6 8" stroke="var(--accent)" stroke-width="1.5" fill="none"/>
+                      <circle cx="22" cy="22" r="3" stroke="var(--text-3)" stroke-width="1.5" fill="none"/>
+                    </svg>
+                  </div>
+                  <div class="dz-body">
+                    <div class="dz-title">Drop a PNG here, or <a class="dz-link">browse files</a></div>
+                    <div class="dz-rules">
+                      <span class="spec-pill"><span class="ok"></span>PNG · 1024 × 1024px</span>
+                      <span class="spec-pill"><span class="ok"></span>Max 1 MB</span>
+                      <span class="spec-pill"><span class="ok"></span>Transparent bg</span>
+                      <span class="spec-pill"><span class="ok"></span>Logo within center 70%</span>
+                      <span class="spec-pill"><span class="ok"></span>Tight crop, no padding</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="helper">Validation runs on upload: dimensions, file size, transparency, and center fit are checked automatically.</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label">Header / Title
+                <span class="hint">The headline shown above the offer. Target 30–45 characters.</span>
+              </div>
+              <div class="control">
+                <input id="copy-title" data-min="0" data-target-low="30" data-target-high="45" data-max="50" maxlength="50" value="Save 20% on your next Dyson order" />
+                <div class="counter-row">
+                  <div class="counter">
+                    <span class="char-count" id="cnt-title">34</span> / <span class="char-max">50</span>
+                    <span class="char-target">target 30–45</span>
+                  </div>
+                  <div class="meter"><span class="meter-fill" id="mt-title" style="width:68%"></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label">Short description
+                <span class="hint">Compact line shown under the title. Min 40, target 60–90, max 140.</span>
+              </div>
+              <div class="control">
+                <input id="copy-short" data-min="40" data-target-low="60" data-target-high="90" data-max="140" maxlength="140" value="Free shipping plus 20% off when you spend $150 or more." />
+                <div class="counter-row">
+                  <div class="counter">
+                    <span class="char-count" id="cnt-short">56</span> / <span class="char-max">140</span>
+                    <span class="char-target">target 60–90 · min 40</span>
+                  </div>
+                  <div class="meter"><span class="meter-fill warn" id="mt-short" style="width:40%"></span></div>
+                </div>
+                <div class="helper">Currently 4 characters under target. Consider lengthening for better resonance.</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label">Long description
+                <span class="hint">Expanded copy. Min 80, target 100–130, max 180.</span>
+              </div>
+              <div class="control">
+                <textarea id="copy-long" data-min="80" data-target-low="100" data-target-high="130" data-max="180" maxlength="180" rows="3">Treat yourself to engineering-grade home care. Save 20% on your next Dyson purchase plus enjoy free shipping when you spend $150 or more, online only.</textarea>
+                <div class="counter-row">
+                  <div class="counter">
+                    <span class="char-count" id="cnt-long">152</span> / <span class="char-max">180</span>
+                    <span class="char-target">target 100–130 · min 80</span>
+                  </div>
+                  <div class="meter"><span class="meter-fill warn" id="mt-long" style="width:84%"></span></div>
+                </div>
+                <div class="helper">22 characters above target. Trim if you want a cleaner mobile rendering.</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label">CTA destination URL
+                <span class="hint">Where the shopper lands when they tap the offer.</span>
+              </div>
+              <div class="control">
+                <input value="https://www.dyson.com/offers/spring?utm_source=button&utm_campaign=spring-refresh" />
+                <div class="helper">Button automatically appends click tracking. Validate the URL renders mobile-first.</div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="label">Flight dates
+                <span class="hint">Start date is required. End date is optional. Leave blank to run until budget cap is reached.</span>
+              </div>
+              <div class="control">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
+                  <div>
+                    <div class="input-label">Start date <span class="req">required</span></div>
+                    <input type="date" value="2026-04-28" />
+                  </div>
+                  <div>
+                    <div class="input-label">End date <span class="optional">optional</span></div>
+                    <input type="date" value="2026-05-31" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="wizard-footer">
+              <button class="btn">← Back</button>
+              <div style="display:flex; gap:8px">
+                <button class="btn btn-ghost">Save &amp; exit</button>
+                <button class="btn btn-primary">Continue →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Side: live preview + summary -->
+        <aside class="wizard-side">
+          <div class="preview-card">
+            <div class="preview-head">
+              <h4>Live preview</h4>
+              <div class="seg" style="padding:2px">
+                <span class="seg-item active" style="padding:3px 8px; font-size:11px">Mobile</span>
+                <span class="seg-item" style="padding:3px 8px; font-size:11px">Desktop</span>
+              </div>
+            </div>
+
+            <div class="phone">
+              <div class="phone-screen">
+                <div class="phone-status">
+                  <span>9:41</span>
+                  <span style="display:flex; gap:3px; align-items:center">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M2 17h2v3H2zm5-4h2v7H7zm5-4h2v11h-2zm5-5h2v16h-2z"/></svg>
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1.2" fill="currentColor"/></svg>
+                  </span>
+                </div>
+                <div class="confirm-bar">Order confirmed · #14021</div>
+                <div class="confirm-thanks">Thanks for your order, Maya!</div>
+                <div class="offer-card">
+                  <div class="offer-logo">
+                    <svg viewBox="0 0 60 60" width="48" height="48" fill="none">
+                      <rect x="1" y="1" width="58" height="58" rx="14" stroke="rgba(255,255,255,0.12)"/>
+                      <text x="30" y="38" text-anchor="middle" font-family="Inter Tight" font-weight="800" font-size="20" fill="var(--accent)">D</text>
+                    </svg>
+                  </div>
+                  <div class="offer-title" id="prev-title">Save 20% on your next Dyson order</div>
+                  <div class="offer-short" id="prev-short">Free shipping plus 20% off when you spend $150 or more.</div>
+                  <button class="offer-cta">Get this offer →</button>
+                  <div class="offer-foot">Powered by Button · sponsored</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="preview-meta">
+              <span class="muted tiny">Standard post-checkout offer · mobile-first</span>
+              <a class="link tiny">Open in full preview ↗</a>
+            </div>
+          </div>
+
+          <div class="summary-card mt-3">
+            <h4>Campaign summary</h4>
+            <div class="summary-row"><span class="lbl">Advertiser <span class="muted tiny">(scoped)</span></span><span class="val"><span class="ad-logo-mini" style="display:inline-grid; vertical-align:middle; margin-right:6px">DY</span>Dyson</span></div>
+            <div class="summary-row"><span class="lbl">Name</span><span class="val">Spring Refresh</span></div>
+            <div class="summary-row"><span class="lbl">Stage</span><span class="val">Post-Journey</span></div>
+            <div class="summary-row"><span class="lbl">Format</span><span class="val">Standard post-checkout offer</span></div>
+            <div class="summary-row"><span class="lbl">Mode</span><span class="val">Self-Service</span></div>
+            <div class="summary-row"><span class="lbl">Logo</span><span class="val">dyson-logo-1024.png · 234 KB</span></div>
+            <div class="summary-row"><span class="lbl">Flight</span><span class="val">Apr 28 to May 31</span></div>
+            <div class="summary-row"><span class="lbl">Budget</span><span class="val empty">Set in next step</span></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: CAMPAIGN DETAIL ===================== -->
+    <section class="view" data-view="detail">
+      <div class="detail-head">
+        <div>
+          <div class="breadcrumb">
+            <a onclick="go('campaigns')">Campaigns</a>
+            <span class="muted">/</span>
+            <span class="muted">Dyson · Spring Refresh</span>
+          </div>
+          <div class="name">
+            Dyson · Spring Refresh
+            <span class="pill active"><span class="dot"></span>Active</span>
+            <span class="mode-chip self"><span class="sq"></span>Self-Service</span>
+          </div>
+          <div class="meta">
+            <span class="ad"><span class="logo-mini">DY</span> Dyson</span>
+            <span class="muted">·</span>
+            <span class="muted tiny">Post-Journey · Confirmation</span>
+            <span class="muted">·</span>
+            <span class="muted tiny">Flight: Apr 14 → May 31</span>
+            <span class="muted">·</span>
+            <span class="muted tiny">Created by Mark Webber</span>
+          </div>
+        </div>
+        <div class="actions" style="flex-wrap:wrap; justify-content:flex-end">
+          <button class="btn">
+            <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>
+            Pause
+          </button>
+          <button class="btn">
+            <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
+            Edit
+          </button>
+          <button class="btn">
+            <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            Duplicate
+          </button>
+          <button class="btn btn-danger">End</button>
+        </div>
+      </div>
+
+      <!-- KPI Strip -->
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label">Spend</div>
+          <div class="kpi-value">$28.4k<span class="unit">/ $50k</span></div>
+          <div class="pace-bar-big" style="margin-top:10px"><span style="width:64%"></span></div>
+          <div class="kpi-delta flat" style="margin-top:8px">64% of cap · pacing on plan</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Impressions</div>
+          <div class="kpi-value">1.84M</div>
+          <div class="kpi-delta up">+11% vs plan</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Conversions</div>
+          <div class="kpi-value">12,431</div>
+          <div class="kpi-delta up">+6% vs plan</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">RPJ contribution</div>
+          <div class="kpi-value">$0.07<span class="unit">/journey</span></div>
+          <div class="kpi-delta flat">stable</div>
+        </div>
+      </div>
+
+      <!-- Two col: chart + side -->
+      <div class="two-col">
+        <div class="chart-card">
+          <div class="chart-head">
+            <div>
+              <div class="title">Performance · last 28 days</div>
+              <div class="muted tiny mt-3">Daily impressions, clicks, and conversions.</div>
+            </div>
+            <div class="leg">
+              <span class="leg-item"><span class="leg-dot" style="background:var(--accent)"></span>Impressions</span>
+              <span class="leg-item"><span class="leg-dot" style="background:var(--info)"></span>Clicks</span>
+              <span class="leg-item"><span class="leg-dot" style="background:var(--positive)"></span>Conversions</span>
+            </div>
+          </div>
+          <!-- Stylized chart (illustrative only) -->
+          <svg class="chart-svg" viewBox="0 0 700 220" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="aFill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#d2ff3a" stop-opacity="0.30"/>
+                <stop offset="100%" stop-color="#d2ff3a" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="bFill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#60a5fa" stop-opacity="0.20"/>
+                <stop offset="100%" stop-color="#60a5fa" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- gridlines -->
+            <g stroke="rgba(255,255,255,0.05)" stroke-dasharray="2 4">
+              <line x1="0" y1="40" x2="700" y2="40"/>
+              <line x1="0" y1="90" x2="700" y2="90"/>
+              <line x1="0" y1="140" x2="700" y2="140"/>
+              <line x1="0" y1="190" x2="700" y2="190"/>
+            </g>
+            <!-- impressions area -->
+            <path d="M0 160 L25 150 L50 145 L75 130 L100 138 L125 120 L150 122 L175 110 L200 105 L225 95 L250 102 L275 90 L300 86 L325 82 L350 90 L375 78 L400 76 L425 70 L450 78 L475 64 L500 60 L525 65 L550 55 L575 50 L600 58 L625 48 L650 44 L675 50 L700 40 L700 220 L0 220 Z" fill="url(#aFill)"/>
+            <path d="M0 160 L25 150 L50 145 L75 130 L100 138 L125 120 L150 122 L175 110 L200 105 L225 95 L250 102 L275 90 L300 86 L325 82 L350 90 L375 78 L400 76 L425 70 L450 78 L475 64 L500 60 L525 65 L550 55 L575 50 L600 58 L625 48 L650 44 L675 50 L700 40" fill="none" stroke="#d2ff3a" stroke-width="2"/>
+            <!-- clicks line -->
+            <path d="M0 190 L50 184 L100 178 L150 175 L200 170 L250 162 L300 158 L350 152 L400 145 L450 142 L500 135 L550 130 L600 122 L650 118 L700 110" fill="none" stroke="#60a5fa" stroke-width="1.6" stroke-dasharray="0"/>
+            <!-- conversions line -->
+            <path d="M0 210 L50 208 L100 204 L150 200 L200 198 L250 194 L300 190 L350 188 L400 182 L450 180 L500 175 L550 170 L600 168 L650 165 L700 160" fill="none" stroke="#4ade80" stroke-width="1.6"/>
+          </svg>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:16px">
+            <div class="section-head">
+              <h2>Pacing</h2>
+              <span class="pill active"><span class="dot"></span>On plan</span>
+            </div>
+            <div class="pace-widget">
+              <div class="pace-stat">
+                <div class="lbl">Today</div>
+                <div class="v">$1.04k</div>
+                <div class="sub">+2% vs plan</div>
+              </div>
+              <div class="pace-stat">
+                <div class="lbl">Days remaining</div>
+                <div class="v">34</div>
+                <div class="sub">to May 31</div>
+              </div>
+            </div>
+            <div class="pace-bar-big mt-4"><span style="width:64%"></span></div>
+            <div class="muted tiny mt-3">$28.4k of $50k cap · 64% delivered.</div>
+          </div>
+
+          <div class="card">
+            <div class="section-head">
+              <h2>Retailer mix</h2>
+              <span class="muted tiny">28d</span>
+            </div>
+            <div class="mix-row">
+              <div class="top"><span class="name">Walmart</span><span class="val">$13.2k · 47%</span></div>
+              <div class="bar"><span style="width:47%; background:var(--accent)"></span></div>
+            </div>
+            <div class="mix-row">
+              <div class="top"><span class="name">Target</span><span class="val">$9.8k · 35%</span></div>
+              <div class="bar"><span style="width:35%; background:var(--info)"></span></div>
+            </div>
+            <div class="mix-row">
+              <div class="top"><span class="name">Best Buy</span><span class="val">$5.4k · 18%</span></div>
+              <div class="bar"><span style="width:18%; background:var(--positive)"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Creative preview + spec block -->
+      <div class="two-col">
+        <div class="card">
+          <div class="section-head">
+            <h2>Creative</h2>
+            <div style="display:flex; gap:8px; align-items:center">
+              <span class="pill"><span class="dot" style="background:var(--accent)"></span>Approved</span>
+              <button class="btn btn-sm">Edit creative</button>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 220px 1fr; gap: var(--s-5); align-items:flex-start">
+            <div class="phone" style="margin:0">
+              <div class="phone-screen">
+                <div class="phone-status">
+                  <span>9:41</span>
+                  <span style="display:flex; gap:3px; align-items:center">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M2 17h2v3H2zm5-4h2v7H7zm5-4h2v11h-2zm5-5h2v16h-2z"/></svg>
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1.2" fill="currentColor"/></svg>
+                  </span>
+                </div>
+                <div class="confirm-bar">Order confirmed · #14021</div>
+                <div class="confirm-thanks">Thanks for your order, Maya!</div>
+                <div class="offer-card">
+                  <div class="offer-logo">
+                    <svg viewBox="0 0 60 60" width="48" height="48" fill="none">
+                      <rect x="1" y="1" width="58" height="58" rx="14" stroke="rgba(255,255,255,0.12)"/>
+                      <text x="30" y="38" text-anchor="middle" font-family="Inter Tight" font-weight="800" font-size="20" fill="var(--accent)">D</text>
+                    </svg>
+                  </div>
+                  <div class="offer-title">Save 20% on your next Dyson order</div>
+                  <div class="offer-short">Free shipping plus 20% off when you spend $150 or more.</div>
+                  <button class="offer-cta">Get this offer →</button>
+                  <div class="offer-foot">Powered by Button · sponsored</div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="format-banner" style="margin:0 0 var(--s-4)">
+                <div class="format-icon">
+                  <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h6"/></svg>
+                </div>
+                <div>
+                  <div class="format-title">Standard post-checkout offer</div>
+                  <div class="format-sub">Mobile-first format. Matches MomentScience creative submission guidelines.</div>
+                </div>
+              </div>
+
+              <div class="summary-row"><span class="lbl">Title</span><span class="val">Save 20% on your next Dyson order <span class="muted tiny">· 34 ch</span></span></div>
+              <div class="summary-row"><span class="lbl">Short description</span><span class="val">Free shipping plus 20% off when you spend $150 or more. <span class="muted tiny">· 56 ch</span></span></div>
+              <div class="summary-row"><span class="lbl">Long description</span><span class="val">Treat yourself to engineering-grade home care. Save 20% on your next Dyson purchase plus enjoy free shipping when you spend $150 or more, online only. <span class="muted tiny">· 152 ch</span></span></div>
+              <div class="summary-row"><span class="lbl">CTA URL</span><span class="val"><span class="muted tiny" style="font-family:var(--font-mono)">dyson.com/offers/spring</span></span></div>
+              <div class="summary-row"><span class="lbl">Logo asset</span><span class="val">dyson-logo-1024.png · 234 KB · 1024×1024</span></div>
+              <div class="summary-row"><span class="lbl">Flight</span><span class="val">Apr 28 → May 31</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-head">
+            <h2>Validation</h2>
+            <span class="pill active"><span class="dot"></span>All checks passed</span>
+          </div>
+          <div class="check-list">
+            <div class="check-row"><span class="check ok">✓</span><div><div class="check-title">Logo dimensions</div><div class="check-sub">1024 × 1024 px · PNG</div></div></div>
+            <div class="check-row"><span class="check ok">✓</span><div><div class="check-title">File size under 1 MB</div><div class="check-sub">234 KB · 23% of cap</div></div></div>
+            <div class="check-row"><span class="check ok">✓</span><div><div class="check-title">Transparent background</div><div class="check-sub">Detected on upload</div></div></div>
+            <div class="check-row"><span class="check ok">✓</span><div><div class="check-title">Logo within center 70%</div><div class="check-sub">Centered · tight crop</div></div></div>
+            <div class="check-row"><span class="check ok">✓</span><div><div class="check-title">Title within target</div><div class="check-sub">34 chars · target 30–45</div></div></div>
+            <div class="check-row"><span class="check warn">!</span><div><div class="check-title">Short description below target</div><div class="check-sub">56 chars · target 60–90</div></div></div>
+            <div class="check-row"><span class="check warn">!</span><div><div class="check-title">Long description above target</div><div class="check-sub">152 chars · target 100–130</div></div></div>
+            <div class="check-row"><span class="check ok">✓</span><div><div class="check-title">CTA URL resolves &amp; tracks</div><div class="check-sub">200 OK · click tracking ready</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity log for the campaign -->
+      <div class="card">
+        <div class="section-head">
+          <h2>Campaign activity</h2>
+          <a class="link">Full log →</a>
+        </div>
+        <div class="activity">
+          <div class="activity-row">
+            <span class="a-dot up"></span>
+            <span class="a-time">2m ago</span>
+            <span class="a-msg"><span class="who">Mark Webber</span> launched the campaign</span>
+            <span class="a-meta">Status → Active</span>
+          </div>
+          <div class="activity-row">
+            <span class="a-dot info"></span>
+            <span class="a-time">10m ago</span>
+            <span class="a-msg"><span class="who">Mark Webber</span> updated daily pacing cap to <strong>$1,200</strong></span>
+            <span class="a-meta">Pacing</span>
+          </div>
+          <div class="activity-row">
+            <span class="a-dot"></span>
+            <span class="a-time">42m ago</span>
+            <span class="a-msg"><span class="who">Mark Webber</span> added retailer <strong>Best Buy</strong></span>
+            <span class="a-meta">Targeting</span>
+          </div>
+          <div class="activity-row">
+            <span class="a-dot info"></span>
+            <span class="a-time">2h ago</span>
+            <span class="a-msg"><span class="who">System</span> created campaign as draft</span>
+            <span class="a-meta">Created</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: PRE-JOURNEY ===================== -->
+    <section class="view" data-view="pre">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Pre-Journey</div>
+          <h1>Pre-Journey</h1>
+          <p class="sub">CuratedBy and sponsored entry surfaces. Build curated landing experiences and measure their impact on high-intent traffic.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary">+ New CuratedBy</button>
+        </div>
+      </div>
+      <div class="coming-soon">
+        <h3>Pre-Journey configuration is in Phase 1 prep</h3>
+        <p>The CuratedBy Builder is the next surface to ship. The shell, design system, and navigation are all in place. Engineering can begin against the mockups in this POC.</p>
+        <button class="btn btn-primary">View CuratedBy spec</button>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: MID-JOURNEY (Coming Soon) ===================== -->
+    <section class="view" data-view="mid">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Mid-Journey</div>
+          <h1>Mid-Journey</h1>
+          <p class="sub">In-flow Moments configuration. Cross-sell, sponsored listings, app install prompts, CRO interventions.</p>
+        </div>
+      </div>
+      <div class="coming-soon">
+        <h3>Coming in Phase 3</h3>
+        <p>Mid-Journey configuration ships once the campaign and demand layer is stabilised. The navigation slot is reserved so engineers can scaffold routes today.</p>
+        <button class="btn">Notify me</button>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: POST-JOURNEY ===================== -->
+    <section class="view" data-view="post">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Post-Journey</div>
+          <h1>Post-Journey</h1>
+          <p class="sub">Post-checkout offers and BAS-funded demand. Activate incremental revenue without harming conversion.</p>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="go('wizard')">+ New Moment</button>
+        </div>
+      </div>
+      <div class="card-elevated">
+        <div class="section-head">
+          <h2>Active Post-Journey Moments</h2>
+          <span class="muted tiny">8 active</span>
+        </div>
+        <p class="muted tiny" style="margin-top:0">Direct demand campaigns surface here as Post-Journey Moments. Open a Moment to view its placement, guardrails, and performance.</p>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: PICK ADVERTISER (empty state) ===================== -->
+    <section class="view" data-view="pick-advertiser">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Demand · Campaigns</div>
+          <h1>Pick or create an advertiser to get started</h1>
+          <p class="sub">Direct demand campaigns are scoped to a single advertiser. Pick one from the switcher above, or create a new advertiser record. Heavy advertiser management lives in Settings.</p>
+        </div>
+      </div>
+
+      <div class="empty-pick">
+        <div class="empty-pick-grid">
+          <button class="empty-card primary" onclick="openAdMenu()">
+            <div class="empty-icon" style="background:var(--accent-bg); color:var(--accent)">
+              <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+            </div>
+            <div class="empty-title">Open the advertiser switcher</div>
+            <div class="empty-desc">Pick from advertisers already on file. Six advertisers available right now.</div>
+          </button>
+
+          <button class="empty-card" onclick="openAdMenu()">
+            <div class="empty-icon">
+              <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+            </div>
+            <div class="empty-title">New advertiser</div>
+            <div class="empty-desc">Create a new advertiser record. Name, primary contact, and optional logo are required.</div>
+          </button>
+
+          <button class="empty-card" onclick="go('settings')">
+            <div class="empty-icon">
+              <svg class="svgi" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/></svg>
+            </div>
+            <div class="empty-title">Manage advertisers</div>
+            <div class="empty-desc">Edit contact info, link to existing partners, deactivate stale records. Lives in Settings.</div>
+          </button>
+        </div>
+
+        <div class="empty-recent">
+          <div class="empty-recent-label">Recent advertisers</div>
+          <div class="empty-recent-list">
+            <button class="ad-quickpick" onclick="selectAdvertiser('Dyson','DY')">
+              <span class="ad-logo-mini">DY</span><span>Dyson</span>
+            </button>
+            <button class="ad-quickpick" onclick="selectAdvertiser('HelloFresh','HF')">
+              <span class="ad-logo-mini">HF</span><span>HelloFresh</span>
+            </button>
+            <button class="ad-quickpick" onclick="selectAdvertiser('Sephora','SE')">
+              <span class="ad-logo-mini">SE</span><span>Sephora</span>
+            </button>
+            <button class="ad-quickpick" onclick="selectAdvertiser('Brooklinen','BL')">
+              <span class="ad-logo-mini">BL</span><span>Brooklinen</span>
+            </button>
+            <button class="ad-quickpick" onclick="selectAdvertiser('Allbirds','AB')">
+              <span class="ad-logo-mini">AB</span><span>Allbirds</span>
+            </button>
+            <button class="ad-quickpick" onclick="selectAdvertiser('Chewy','CH')">
+              <span class="ad-logo-mini">CH</span><span>Chewy</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: PERFORMANCE ===================== -->
+    <section class="view" data-view="performance">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Insights · Performance</div>
+          <h1>Performance</h1>
+          <p class="sub">Phase 1 ships a summary view. Per-stage and per-Moment breakdowns arrive in Phase 3; incrementality lands in Phase 4.</p>
+        </div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi">
+          <div class="kpi-label">RPJ · 28d</div>
+          <div class="kpi-value">$0.42<span class="unit">/journey</span></div>
+          <div class="kpi-delta up">+8.4%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Conversion lift · 28d</div>
+          <div class="kpi-value">+1.6<span class="unit">pts</span></div>
+          <div class="kpi-delta flat">stable</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Total clicks · 28d</div>
+          <div class="kpi-value">412k</div>
+          <div class="kpi-delta up">+11%</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Active Moments</div>
+          <div class="kpi-value">12</div>
+          <div class="kpi-delta up">+3</div>
+        </div>
+      </div>
+
+      <div class="card-elevated">
+        <div class="section-head">
+          <h2>Per-stage breakdown</h2>
+          <span class="pill coming-soon"><span class="dot"></span>Phase 3</span>
+        </div>
+        <p class="muted tiny" style="margin-top:0">A per-stage performance table arrives once Mid-Journey activates. The shape of the data and pipeline is being instrumented now.</p>
+      </div>
+    </section>
+
+    <!-- ===================== VIEW: SETTINGS ===================== -->
+    <section class="view" data-view="settings">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot"></span> Admin · Settings</div>
+          <h1>Settings</h1>
+          <p class="sub">Workspace, advertisers, team, guardrail defaults, integrations.</p>
+        </div>
+      </div>
+
+      <div class="settings-layout">
+        <aside class="settings-nav">
+          <div class="settings-nav-item active">Workspace</div>
+          <div class="settings-nav-item">Advertisers</div>
+          <div class="settings-nav-item">Team &amp; access</div>
+          <div class="settings-nav-item">Guardrail defaults</div>
+          <div class="settings-nav-item">Integrations</div>
+          <div class="settings-nav-item">Billing</div>
+        </aside>
+
+        <div class="settings-body">
+          <div class="form-card">
+            <h3>Workspace</h3>
+            <p class="desc">Workspace-level defaults applied to every Moment unless overridden.</p>
+            <div class="field">
+              <div class="label">Workspace name</div>
+              <div class="control"><input value="Button Internal" /></div>
+            </div>
+            <div class="field">
+              <div class="label">Default operating mode</div>
+              <div class="control">
+                <div class="mode-selector">
+                  <div class="mode-card selected">
+                    <div class="mode-title"><span class="sq" style="background:var(--mode-self)"></span> Self-Service</div>
+                    <div class="mode-desc">Phase 1 default.</div>
+                  </div>
+                  <div class="mode-card" style="opacity:0.55">
+                    <div class="mode-title"><span class="sq" style="background:var(--mode-managed)"></span> Button-Managed</div>
+                    <div class="mode-desc">Phase 3.</div>
+                  </div>
+                  <div class="mode-card" style="opacity:0.55">
+                    <div class="mode-title"><span class="sq" style="background:var(--mode-optimized)"></span> Button-Optimized</div>
+                    <div class="mode-desc">Phase 4.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="field">
+              <div class="label">Default frequency cap
+                <span class="hint">Maximum times any single shopper can see a Moment in a 24h window.</span>
+              </div>
+              <div class="control"><input value="3" /></div>
+            </div>
+          </div>
+
+          <div class="form-card mt-6">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s-4)">
+              <div>
+                <h3>Advertisers</h3>
+                <p class="desc">Brand records that own direct demand campaigns. Created and managed by Button staff in Phase 1. Self-serve onboarding ships in Phase 3.</p>
+              </div>
+              <button class="btn btn-primary">+ New advertiser</button>
+            </div>
+
+            <div class="table-wrap mt-4">
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>Advertiser</th>
+                    <th>Primary contact</th>
+                    <th>Active campaigns</th>
+                    <th class="right">28d spend</th>
+                    <th>Linked partner</th>
+                    <th class="right">Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div class="name">
+                        <div class="logo">DY</div>
+                        <div>Dyson</div>
+                      </div>
+                    </td>
+                    <td>Mark Webber<br /><span class="muted tiny">mark.webber@usebutton.com</span></td>
+                    <td>2</td>
+                    <td class="right num">$28.4k</td>
+                    <td><span class="muted tiny">not linked</span></td>
+                    <td class="right muted tiny">Apr 14</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="name">
+                        <div class="logo">HF</div>
+                        <div>HelloFresh</div>
+                      </div>
+                    </td>
+                    <td>Tara Klein<br /><span class="muted tiny">tara.k@usebutton.com</span></td>
+                    <td>1</td>
+                    <td class="right num">$15.1k</td>
+                    <td><span class="pill"><span class="dot" style="background:var(--info)"></span>Linked</span></td>
+                    <td class="right muted tiny">Mar 22</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="name">
+                        <div class="logo">SE</div>
+                        <div>Sephora</div>
+                      </div>
+                    </td>
+                    <td>Mark Webber<br /><span class="muted tiny">mark.webber@usebutton.com</span></td>
+                    <td>1</td>
+                    <td class="right num">$41.0k</td>
+                    <td><span class="pill"><span class="dot" style="background:var(--info)"></span>Linked</span></td>
+                    <td class="right muted tiny">Mar 14</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div class="name">
+                        <div class="logo">BL</div>
+                        <div>Brooklinen</div>
+                      </div>
+                    </td>
+                    <td>Mark Webber<br /><span class="muted tiny">mark.webber@usebutton.com</span></td>
+                    <td>0 <span class="muted tiny">(1 draft)</span></td>
+                    <td class="right muted">no spend</td>
+                    <td><span class="muted tiny">not linked</span></td>
+                    <td class="right muted tiny">38m ago</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="demo-banner"><span class="dot"></span>POC · DEMO DATA · figures are illustrative</div>
+
+<script>
+  // Minimal view router for the POC. Engineers will replace with their framework.
+  function go(view) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const target = document.querySelector('.view[data-view="' + view + '"]');
+    if (target) target.classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    // Map detail / wizard / pick-advertiser back to campaigns nav highlight
+    const navMap = {
+      'wizard': 'campaigns',
+      'detail': 'campaigns',
+      'pick-advertiser': 'campaigns'
+    };
+    const navKey = navMap[view] || view;
+    const navItem = document.querySelector('.nav-item[data-link="' + navKey + '"]');
+    if (navItem) navItem.classList.add('active');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Wire nav clicks
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.addEventListener('click', () => {
+      if (n.classList.contains('disabled')) return;
+      const link = n.getAttribute('data-link');
+      if (link) go(link);
+    });
+  });
+
+  // -----------------------------------------------------------------
+  // Advertiser switcher
+  // -----------------------------------------------------------------
+  const adTrigger = document.getElementById('ad-trigger');
+  const adMenu = document.getElementById('ad-menu');
+  const adTriggerName = document.getElementById('ad-trigger-name');
+  const adTriggerLogo = document.getElementById('ad-trigger-logo');
+
+  function openAdMenu() { if (adMenu) adMenu.hidden = false; }
+  function closeAdMenu() { if (adMenu) adMenu.hidden = true; }
+  function toggleAdMenu() { if (adMenu) adMenu.hidden = !adMenu.hidden; }
+
+  if (adTrigger) {
+    adTrigger.addEventListener('click', (e) => { e.stopPropagation(); toggleAdMenu(); });
+  }
+  document.addEventListener('click', (e) => {
+    if (!adMenu || adMenu.hidden) return;
+    if (adMenu.contains(e.target) || (adTrigger && adTrigger.contains(e.target))) return;
+    closeAdMenu();
+  });
+
+  function selectAdvertiser(name, initials) {
+    if (adTriggerName) adTriggerName.textContent = name;
+    if (adTriggerLogo) adTriggerLogo.textContent = initials;
+    document.querySelectorAll('.ad-menu-item').forEach(b => b.classList.remove('selected'));
+    const sel = document.querySelector('.ad-menu-item[data-ad-name="' + name + '"]');
+    if (sel) sel.classList.add('selected');
+
+    // Reflect scope into the campaigns page header + wizard header
+    const pageH1 = document.getElementById('page-ad-h1');
+    const pageLogo = document.getElementById('page-ad-logo');
+    if (pageH1) pageH1.textContent = name + ' · Campaigns';
+    if (pageLogo) pageLogo.textContent = initials;
+    const wizH1 = document.getElementById('wiz-ad-h1');
+    const wizLogo = document.getElementById('wiz-ad-logo');
+    if (wizH1) wizH1.textContent = 'New campaign for ' + name;
+    if (wizLogo) wizLogo.textContent = initials;
+
+    closeAdMenu();
+    go('campaigns');
+  }
+
+  document.querySelectorAll('.ad-menu-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const name = item.getAttribute('data-ad-name');
+      const initials = item.getAttribute('data-ad-initials');
+      if (name && initials) selectAdvertiser(name, initials);
+    });
+  });
+
+  const adClear = document.getElementById('ad-clear');
+  if (adClear) {
+    adClear.addEventListener('click', () => {
+      if (adTriggerName) adTriggerName.textContent = 'Select advertiser';
+      if (adTriggerLogo) adTriggerLogo.textContent = '–';
+      document.querySelectorAll('.ad-menu-item').forEach(b => b.classList.remove('selected'));
+      closeAdMenu();
+      go('pick-advertiser');
+    });
+  }
+
+  const adNew = document.getElementById('ad-new');
+  if (adNew) {
+    adNew.addEventListener('click', () => {
+      closeAdMenu();
+      // POC: no creation form yet. Surface the Settings advertiser table.
+      go('settings');
+    });
+  }
+
+  // Live character counters + preview sync for the Creative step
+  function bindCounter(inputId, counterId, meterId, previewId) {
+    const el = document.getElementById(inputId);
+    const cnt = document.getElementById(counterId);
+    const meter = document.getElementById(meterId);
+    const preview = previewId ? document.getElementById(previewId) : null;
+    if (!el) return;
+    const min = +el.dataset.min || 0;
+    const tLow = +el.dataset.targetLow || 0;
+    const tHigh = +el.dataset.targetHigh || 0;
+    const max = +el.dataset.max || el.maxLength || 200;
+
+    const update = () => {
+      const len = el.value.length;
+      cnt.textContent = len;
+      const pct = Math.min(100, Math.round((len / max) * 100));
+      meter.style.width = pct + '%';
+      meter.classList.remove('warn', 'danger');
+      if (len > 0 && (len < min || len > tHigh)) meter.classList.add('warn');
+      if (len > max * 0.95) meter.classList.add('danger');
+      if (preview) preview.textContent = el.value;
+    };
+    el.addEventListener('input', update);
+    update();
+  }
+  bindCounter('copy-title', 'cnt-title', 'mt-title', 'prev-title');
+  bindCounter('copy-short', 'cnt-short', 'mt-short', 'prev-short');
+  bindCounter('copy-long', 'cnt-long', 'mt-long', null);
+
+  // Status tabs interactive (cosmetic only — POC)
+  const tabs = document.getElementById('status-tabs');
+  if (tabs) {
+    tabs.querySelectorAll('.seg-item').forEach(t => {
+      t.addEventListener('click', () => {
+        tabs.querySelectorAll('.seg-item').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
