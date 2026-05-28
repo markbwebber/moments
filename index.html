@@ -547,6 +547,17 @@ tr.cmdk-flash { animation: cmdkRowPulse 1.6s ease-out; }
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
+/* Light-mode contrast: lime text on near-white is unreadable.
+   Use a stronger lime fill with dark text. Same treatment as demand-tab.active. */
+body.light .nav-item .badge-new {
+  background: rgba(210, 255, 58, 0.55);
+  color: var(--text-1);
+  border: 1px solid #9bbf12;
+  padding: 0 5px;
+}
+body.light .nav-item .badge-soon {
+  background: rgba(0, 0, 0, 0.05);
+}
 .nav-foot {
   margin-top: auto;
   padding-top: var(--s-4);
