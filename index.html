@@ -57,11 +57,12 @@
   --mode-managed: #60a5fa;
   --mode-optimized: var(--accent);
 
-  /* Geometry */
-  --radius-sm: 6px;
+  /* Geometry — aligned with Button DS radii (sm 8, md 10, lg 14, xl 16, pill 999) */
+  --radius-sm: 8px;
   --radius: 10px;
   --radius-lg: 14px;
-  --radius-xl: 20px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
 
   /* Spacing scale (4pt) */
   --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px;
@@ -585,9 +586,11 @@ tr.cmdk-flash { animation: cmdkRowPulse 1.6s ease-out; }
 
 .eyebrow {
   display: inline-flex; align-items: center; gap: 8px;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
+  font-weight: 600;
   font-size: 11px;
-  letter-spacing: 0.10em;
+  /* Button DS --tracking-eyebrow: 0.2em */
+  letter-spacing: 0.2em;
   color: var(--text-3);
   text-transform: uppercase;
   margin-bottom: var(--s-3);
@@ -1821,28 +1824,30 @@ body.light .demand-tab.active .demand-tab-sub{color:var(--text-2)}
    All visual decisions key off CSS variables. We just re-bind the same
    variable names under body.light so every surface flips correctly. */
 body.light{
-  --bg:#f7f7f8;
-  --surface-1:#ffffff;
-  --surface-2:#f1f1f3;
-  --surface-3:#e6e6ea;
-  --elevated:#ffffff;
-  --border-soft:rgba(0,0,0,0.06);
-  --border:rgba(0,0,0,0.10);
-  --border-strong:rgba(0,0,0,0.18);
-  --text-1:#0a0a0b;
-  --text-2:#3f3f46;
-  --text-3:#71717a;
-  --text-4:#a1a1aa;
-  --accent-ink:#0a0a0b;
+  /* Aligned with Button Design System neutrals (canvas/card/borders/text).
+     Lime accent intentionally kept — Button blue is skipped per direction. */
+  --bg:#FAFAFA;            /* Button --surface-canvas */
+  --surface-1:#FFFFFF;     /* Button --surface-card */
+  --surface-2:#F4F4F5;
+  --surface-3:#EBEBED;
+  --elevated:#FFFFFF;
+  --border-soft:#F0F0F0;
+  --border:#E5E5E5;        /* Button --border-default */
+  --border-strong:#D4D4D4;
+  --text-1:#181818;        /* Button --color-soft-black */
+  --text-2:#666666;        /* Button --color-text-mid */
+  --text-3:#999999;        /* Button --color-text-muted */
+  --text-4:#B5B5B5;
+  --accent-ink:#181818;
   --accent-bg:rgba(210,255,58,0.24);
   --accent-bg-strong:rgba(210,255,58,0.40);
   --positive-bg:rgba(22,163,74,0.10);
   --warning-bg:rgba(202,138,4,0.12);
-  --danger-bg:rgba(220,38,38,0.10);
+  --danger-bg:rgba(209,67,67,0.10);
   --info-bg:rgba(37,99,235,0.10);
   --positive:#16a34a;
   --warning:#b45309;
-  --danger:#dc2626;
+  --danger:#D14343;        /* Button --color-red */
   --info:#2563eb;
 }
 /* Page-level surfaces that didn't already key off variables — small overrides for the phone preview chrome (which is fixed-light by design but we soften the bezel) */
