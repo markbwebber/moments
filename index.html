@@ -2873,10 +2873,9 @@ body.light .demo-banner{background:rgba(0,0,0,0.04);color:var(--text-3);border-c
   };
 
   // -----------------------------------------------------------------
-  // Theme toggle — dark (default) / light.
-  // Always starts in dark on every page load. The toggle still lets you
-  // switch within a session, but a refresh always resets to dark so demos
-  // never open in light by accident.
+  // Theme toggle — light (default) / dark.
+  // Always starts in light on every page load. The toggle still lets you
+  // switch within a session, but a refresh always resets to light.
   // -----------------------------------------------------------------
   (function () {
     const KEY = 'moments-studio-theme';
@@ -2894,9 +2893,9 @@ body.light .demo-banner{background:rgba(0,0,0,0.04);color:var(--text-3);border-c
     }
 
     // Clear any previously-stored preference so this load truly starts fresh,
-    // then force dark.
+    // then force light.
     try { localStorage.removeItem(KEY); } catch (e) {}
-    apply('dark');
+    apply('light');
 
     if (btn) {
       btn.addEventListener('click', () => {
